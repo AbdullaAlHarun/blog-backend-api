@@ -26,17 +26,19 @@ router.get('/', (req, res) => {
 });
 
 // Add new post
-router.post('/', (req, res) => {
-    const { title, content, user_id } = req.body;
-    if (!title || !content || !user_id) {
-        return res.status(400).json({ message: 'Please provide title, content, and user_id' });
+router.post('/', authenticateToken, (req, res) => {
+    const { title, content } = req.body;
+
+    if (!title || !content) {
+        return res.status(400).json({ message: 'Title and content are required' });
     }
-    db.query('INSERT INTO posts (title, content, user_id) VALUES (?, ?, ?)', [title, content, user_id], (err) => {
+
+    const query = 'INSERT INTO posts (title, content, user_id) VALUES (?, ?, ?)';
+    db.query(query, [title, content, req.user.id], (err, result) => {
         if (err) {
-            res.status(500).json({ error: err.message });
-        } else {
-            res.status(201).json({ message: 'Post added successfully' });
+            return res.status(500).json({ message: 'Database error', error: err });
         }
+        res.status(201).json({ message: 'Post created successfully' });
     });
 });
 
