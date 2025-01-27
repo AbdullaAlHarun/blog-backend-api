@@ -10,7 +10,14 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Test route
+// Routes
+const userRoutes = require('./routes/users');
+const postRoutes = require('./routes/posts');
+
+app.use('/users', userRoutes);
+app.use('/posts', postRoutes);
+
+// Default route
 app.get('/', (req, res) => {
     res.send('API is running...');
 });
