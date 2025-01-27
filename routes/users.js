@@ -47,4 +47,39 @@ router.get('/:id/posts', (req, res) => {
     });
 });
 
+// Update user by ID
+router.put('/:id', (req, res) => {
+    const userId = req.params.id;
+    const { name, email } = req.body;
+
+    if (!name || !email) {
+        return res.status(400).json({ message: 'Please provide name and email' });
+    }
+
+    db.query(
+        'UPDATE users SET name = ?, email = ? WHERE id = ?',
+        [name, email, userId],
+        (err, result) => {
+            if (err) {
+                res.status(500).json({ error: err.message });
+            } else {
+                res.status(200).json({ message: 'User updated successfully' });
+            }
+        }
+    );
+});
+
+// Delete user by ID
+router.delete('/:id', (req, res) => {
+    const userId = req.params.id;
+
+    db.query('DELETE FROM users WHERE id = ?', [userId], (err, result) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.status(200).json({ message: 'User deleted successfully' });
+        }
+    });
+});
+
 module.exports = router;
