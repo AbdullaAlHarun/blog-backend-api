@@ -1,31 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../models/db');
+const db = require('../models/db'); // Adjust this path as per your project structure
 const authenticateToken = require('../middleware/authMiddleware');
 
-// Protected route to get all posts
-router.get('/', authenticateToken, (req, res) => {
-    db.query('SELECT * FROM posts', (err, results) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
-        } else {
-            res.status(200).json(results);
-        }
-    });
-});
-
 // Get all posts
-router.get('/', (req, res) => {
-    db.query('SELECT * FROM posts', (err, results) => {
+router.get('/', authenticateToken, (req, res) => {
+    const query = 'SELECT * FROM posts';
+
+    db.query(query, (err, results) => {
         if (err) {
-            res.status(500).json({ error: err.message });
-        } else {
-            res.status(200).json(results);
+            return res.status(500).json({ message: 'Database error', error: err });
         }
+        res.json(results);
     });
 });
 
-// Add new post
+// Create a new post
 router.post('/', authenticateToken, (req, res) => {
     const { title, content } = req.body;
 
@@ -33,8 +23,10 @@ router.post('/', authenticateToken, (req, res) => {
         return res.status(400).json({ message: 'Title and content are required' });
     }
 
+    const userId = req.user.id; // Assuming the user ID is attached to the request after token verification
     const query = 'INSERT INTO posts (title, content, user_id) VALUES (?, ?, ?)';
-    db.query(query, [title, content, req.user.id], (err, result) => {
+
+    db.query(query, [title, content, userId], (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Database error', error: err });
         }
