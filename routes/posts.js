@@ -1,6 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../models/db');
+const authenticateToken = require('../middleware/authMiddleware');
+
+// Protected route to get all posts
+router.get('/', authenticateToken, (req, res) => {
+    db.query('SELECT * FROM posts', (err, results) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.status(200).json(results);
+        }
+    });
+});
 
 // Get all posts
 router.get('/', (req, res) => {
