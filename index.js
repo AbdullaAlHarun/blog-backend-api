@@ -6,13 +6,12 @@ require('dotenv').config();
 
 const app = express();
 
-// Enable CORS before any route definitions
 app.use(cors({
-    origin: ['http://localhost:5500', 'https://your-frontend-url.vercel.app'],
-    methods: 'GET,POST,PUT,DELETE',
-    allowedHeaders: 'Content-Type,Authorization'
+    origin: ['http://localhost:5500', 'https://blog-frontend-ltaeukr9a-abdulla-al-haruns-projects.vercel.app'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
 }));
-
 // Middleware
 app.use(bodyParser.json());
 
