@@ -28,4 +28,23 @@ router.post('/', (req, res) => {
     });
 });
 
+// Get all posts by a specific user (JOIN example)
+router.get('/:id/posts', (req, res) => {
+    const userId = req.params.id;
+    const query = `
+        SELECT users.name, posts.title, posts.content 
+        FROM users 
+        JOIN posts ON users.id = posts.user_id 
+        WHERE users.id = ?
+    `;
+
+    db.query(query, [userId], (err, results) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.status(200).json(results);
+        }
+    });
+});
+
 module.exports = router;
